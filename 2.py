@@ -15,11 +15,15 @@ class bcolors:
 def command(command):
     stdin, stdout, stderr = client.exec_command(command)
 
-host=input('IP Server you want to connect : ')
-port=22
-user=input('User to login : ')
-passw=getpass.getpass('password : ')
+# host=input('IP Server you want to connect : ')
+# port=22
+# user=input('User to login : ')
+# passw=getpass.getpass('password : ')
 
+host='192.168.111.112'
+port=22
+user='mork'
+passw='rs43392'
 #connect ssh
 try:
     client = paramiko.SSHClient()
