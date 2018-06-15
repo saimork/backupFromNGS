@@ -65,27 +65,36 @@ for fileInResultDir in tqdm(sftp.listdir_attr(serverPath),ascii=True,ncols=100):
                                                :fileInResultDir.filename.index('URRC-') + 7]
 
         def downloadCoverAverage(): #download coverAverage.tar.gz
-            sftp.get(plugin_outServ + 'coverAverage-%s.tar.gz' % filenameTar, \
-                     plugin_out + 'coverAverage-%s.tar.gz' % filenameTar)
-            logger.info('download coverAverage complete')
+            try:
+                sftp.get(plugin_outServ + 'coverAverage-%s.tar.gz' % filenameTar, \
+                         plugin_out + 'coverAverage-%s.tar.gz' % filenameTar)
+                logger.info('download coverAverage complete')
+            except IOError:
+                logger.error('file not exist')
 
         def downloadVariant(): #download variant.tar.gz
-            sftp.get(plugin_outServ + 'variant-%s.tar.gz' % filenameTar, \
-                     plugin_out + 'variant-%s.tar.gz' % filenameTar)
-            logger.info('download variant complete')
-
+            try:
+                sftp.get(plugin_outServ + 'variant-%s.tar.gz' % filenameTar, \
+                         plugin_out + 'variant-%s.tar.gz' % filenameTar)
+                logger.info('download variant complete')
+            except IOError:
+                logger.error('file not exist')
         def tarCoverAverage(): #compress all coverAverage directory
-            command('cd %s ; tar -czf coverAverage-%s.tar.gz --anchored cov*' \
-                    % (plugin_outServ, filenameTar))
-            time.sleep(1)
-            logger.info('compress coverAverage complete')
-
+            try:
+                command('cd %s ; tar -czf coverAverage-%s.tar.gz --anchored cov*' \
+                        % (plugin_outServ, filenameTar))
+                time.sleep(1)
+                logger.info('compress coverAverage complete')
+            except IOError:
+                logger.error('file not exist')
         def tarVariant(): #compress all variant directory
-            command('cd %s ; tar -czf variant-%s.tar.gz --anchored var*' \
-                    % (plugin_outServ, filenameTar))
-            time.sleep(1)
-            logger.info('compress variant complete')
-
+            try:
+                command('cd %s ; tar -czf variant-%s.tar.gz --anchored var*' \
+                        % (plugin_outServ, filenameTar))
+                time.sleep(1)
+                logger.info('compress variant complete')
+            except IOError:
+                logger.error('file not exist')
         if fileInResultDir.filename in os.listdir(wd1) :  #if already folder ่ just check file
             logger.info('folder : %s already exist' %fileInResultDir.filename)
             for fileInRun in sftp.listdir_attr(fileServerPath):
@@ -136,27 +145,26 @@ for fileInResultDir in tqdm(sftp.listdir_attr(serverPath),ascii=True,ncols=100):
                         else:
                             pass
                         i += 1
-                    def compressAndDownload():
-                        if covertargz == 1 and vartargz == 1:
-                            logger.info('both .tar.gz already exist')
-                            downloadVariant()
-                            downloadCoverAverage()
-                        elif covertargz == 1 and vartargz == 0:
-                            logger.info('only coverAverage compressed')
-                            tarVariant()
-                            downloadVariant()
-                            downloadCoverAverage()
-                        elif covertargz == 0 and vartargz == 1:
-                            logger.info('only variant compressed')
-                            tarCoverAverage()
-                            downloadVariant()
-                            downloadCoverAverage()
-                        elif covertargz == 0 and vartargz == 0:
-                            logger.info('both not compress yet')
-                            tarCoverAverage()
-                            tarVariant()
-                            downloadVariant()
-                            downloadCoverAverage()
+                    if covertargz == 1 and vartargz == 1:
+                        logger.info('both .tar.gz already exist')
+                        downloadVariant()
+                        downloadCoverAverage()
+                    elif covertargz == 1 and vartargz == 0:
+                        logger.info('only coverAverage compressed')
+                        tarVariant()
+                        downloadVariant()
+                        downloadCoverAverage()
+                    elif covertargz == 0 and vartargz == 1:
+                        logger.info('only variant compressed')
+                        tarCoverAverage()
+                        downloadVariant()
+                        downloadCoverAverage()
+                    elif covertargz == 0 and vartargz == 0:
+                        logger.info('both not compress yet')
+                        tarCoverAverage()
+                        tarVariant()
+                        downloadVariant()
+                        downloadCoverAverage()
 
                     elif 'plugin_out' in fileInRun.filename and 'plugin_out' in os.listdir(wd2) and len(
                         os.listdir(plugin_out)) != 0:
@@ -176,8 +184,6 @@ for fileInResultDir in tqdm(sftp.listdir_attr(serverPath),ascii=True,ncols=100):
                                     pass
                             else:
                                 pass
-                    elif   #ถ้าไม่มีไฟล์ในปลักอิน ทำไง
-
                     else:
                         pass
                 else:
