@@ -129,8 +129,7 @@ for fileInResultDir in tqdm(sftp.listdir_attr(serverPath),ascii=True,ncols=100):
                     i = 0
                     covertargz = 0  # 0=not exist, 1=exist
                     vartargz = 0
-                    fileCover=0
-                    fileVariant=0
+
                     for fileinPlugin in sftp.listdir_attr(plugin_outServ):
                         if ('cover' in fileinPlugin.filename and '.tar.gz' in fileinPlugin.filename) and 'cover' in \
                                 sftp.listdir(plugin_outServ)[i] and '.tar.gz' in sftp.listdir(plugin_outServ)[i]:
@@ -138,10 +137,6 @@ for fileInResultDir in tqdm(sftp.listdir_attr(serverPath),ascii=True,ncols=100):
                         elif ('var' in fileinPlugin.filename and '.tar.gz' in fileinPlugin.filename) and 'var' in \
                                 sftp.listdir(plugin_outServ)[i] and '.tar.gz' in sftp.listdir(plugin_outServ)[i]:
                             vartargz += 1
-                        elif 'cover' in fileinPlugin.filename:
-                            fileCover +=1
-                        elif 'variant' in fileinPlugin.filname:
-                            fileVariant +=1
                         else:
                             pass
                         i += 1
