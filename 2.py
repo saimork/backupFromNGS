@@ -1,12 +1,21 @@
-import paramiko
 import os
-import stat
 from datetime import datetime
 import time
-from tqdm import tqdm
 import logging
 import getpass
 
+try:
+    import stat
+except:
+    os.system('python -m pip install stat')
+try:
+    from tqdm import tqdm
+except:
+    os.system('python -m pip install tqdm')
+try:
+    import paramiko
+except:
+    os.system('python -m pip install paramiko')
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -51,12 +60,13 @@ except paramiko.SFTP_FAILURE:
 
 
 serverPath = '/home/mork/backupMe'
+wd1 = 'e:/URRC/pycharmProject/backupServer/backupArea/'
 for fileInResultDir in tqdm(sftp.listdir_attr(serverPath),ascii=True,ncols=100): #for every file in backup directory
     if stat.S_ISDIR(fileInResultDir.st_mode) and 'URRC' in fileInResultDir.filename\
             and not('_tn_' in fileInResultDir.filename): #select target directory
+        # input path to save file
 
-        wd1 = 'e:/URRC/pycharmProject/backupServer/backupArea/'
-        wd2 = 'e:/URRC/pycharmProject/backupServer/backupArea/%s/' % fileInResultDir.filename
+        wd2 = wd1 + '%s/' % fileInResultDir.filename
         bam = wd2 + 'BAM/'
         fileServerPath = serverPath + "/" + fileInResultDir.filename + "/"
         plugin_out = wd2 + 'plugin_out/'
@@ -124,6 +134,8 @@ for fileInResultDir in tqdm(sftp.listdir_attr(serverPath),ascii=True,ncols=100):
                 elif not('report.pdf' in os.listdir(wd2)) and fileInRun.filename == 'report.pdf':
                     sftp.get(fileServerPath+fileInRun.filename,wd2+fileInRun.filename)
                     logger.info('download report.pdf complete')
+                elif not('report.pdf' in sftp.listdir(fileServerPath)):
+                    logger.error('server not exist report.pdf')
 
                 # check if exist file in client
                 # if file site not equal, download again
@@ -221,7 +233,7 @@ for fileInResultDir in tqdm(sftp.listdir_attr(serverPath),ascii=True,ncols=100):
         # if folder not exist in client
         # make folder, compress file and download
         else:
-            logger.info('not found %s folder' %fileInResultDir.filename)
+            logger.info('not found %s folder in client' %fileInResultDir.filename)
             os.mkdir(wd2)
             logger.info('create folder %s complete' %fileInResultDir.filename)
             os.mkdir(bam)
